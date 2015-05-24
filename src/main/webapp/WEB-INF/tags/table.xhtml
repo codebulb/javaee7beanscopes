@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:scopes="http://www.codebulb.ch/javaee7scopes/facelets"
+      xmlns:o="http://omnifaces.org/ui">
+    <h:body>
+        <ui:composition>
+            <h1>Comparison of Bean scope definitions in Java EE 7 Web Profile</h1>
+            <p>running on #{facesContext.externalContext.context.serverInfo}</p>
+            <f:view>
+                <h:form>
+                    <table style="margin-bottom: 16px;">
+                        <tr>
+                            <td><h:link value="GET to same page" outcome="index#{index}.xhtml">
+                                    <f:param name="cid" value="#{cdiBeanConversation.conversation.id}" disable="#{empty cdiBeanConversation.conversation.id}"/>
+                                </h:link></td>
+                            <td><h:link value="GET with navigation" outcome="index#{empty index ? '2' : ''}.xhtml">
+                                    <f:param name="cid" value="#{cdiBeanConversation.conversation.id}" disable="#{empty cdiBeanConversation.conversation.id}"/>
+                                </h:link></td>
+                            <td><h:commandButton value="POST to same page" action="#{counter.stayHere()}"/></td>
+                            <td><h:commandButton value="POST with navigation" action="#{counter.navigateTo(empty index ? '2' : '')}"/></td>
+                            <td><h:commandButton value="Begin CDI Conversation" action="#{cdiBeanConversation.conversation.begin}" /></td>
+                             <td><h:link value="Forget CDI Conversation" outcome="index#{index}.xhtml" disabled="#{empty cdiBeanConversation.conversation.id}"/></td>
+                            <td><h:commandButton value="End CDI Conversation" action="#{cdiBeanConversation.conversation.end}"/></td>
+                            <td><h:link value="Begin CDI Flow" outcome="myFlow" disabled="#{not empty facesContext.application.flowHandler.currentFlow}">
+                                    <f:param name="cid" value="#{cdiBeanConversation.conversation.id}" disable="#{empty cdiBeanConversation.conversation.id}"/>
+                                </h:link></td>
+                            <td><h:link value="End CDI Flow" outcome="endFlow" disabled="#{empty facesContext.application.flowHandler.currentFlow}">
+                                    <f:param name="cid" value="#{cdiBeanConversation.conversation.id}" disable="#{empty cdiBeanConversation.conversation.id}"/>
+                                </h:link></td>
+                            <td><h:commandButton value="Invalidate session" action="#{counter.invalidateSession}"/></td>
+                            <td><h:commandButton value="Reset" action="#{counter.reset}"/></td>
+                        </tr>
+                    </table>
+                </h:form>
+            </f:view>
+            <table border="1" style="border: none;">
+                <tr style="background-color: lightgray" valign="top">
+                    <th class="leftTitle">JSF 2.2</th>
+                    <td style="background-color: white;" class="leftTitle">javax.faces.bean.*</td>
+                    <th colspan="3" class="fixedwith">@NoneScoped</th>
+                    <th colspan="3" class="fixedwith">@RequestScoped</th>
+                    <th colspan="3" class="fixedwith">flash<sup><a href="#f1">1</a></sup></th>
+                    <th colspan="3" class="fixedwith">@ViewScoped</th>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th colspan="3" class="fixedwith">@SessionScoped</th>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th colspan="3" class="fixedwith">@ApplicationScoped</th>
+                </tr>
+                <tr>
+                    <td><h:graphicImage library="images/icons" name="bullet_green.png"/> JSR-344 (JSR-314)</td>
+                    <td>Type: @ManagedBean</td>
+                    <scopes:statusTitleRows repeat="6"/>
+                </tr>
+                <tr>
+                    <td style="font-style: italic;">Oracle Mojarra</td>
+                    <td>Default: @RequestScoped</td>
+                    <scopes:beanStatusRows bean="#{jsfBeanNone}"/>
+                    <scopes:beanStatusRows bean="#{jsfBeanRequest}"/>
+                    <scopes:beanStatusRows bean="#{jsfFlashLoader.loadBean()}"/>
+                    <scopes:beanStatusRows bean="#{jsfBeanView}"/>
+                    <scopes:beanStatusRows bean="#{jsfBeanSession}"/>
+                    <scopes:beanStatusRows bean="#{jsfBeanApplication}"/>
+                </tr>
+                <tr style="border: none;">
+                    <td colspan="0" style="border: none; padding: 8px;"></td>
+                </tr>
+                
+                <tr style="background-color: lightgray" valign="top">
+                    <th class="leftTitle">CDI 1.1</th>
+                    <td style="background-color: white;" class="leftTitle">javax.enterprise.context.*</td>
+                    <th colspan="3" class="fixedwith">@Dependent</th>
+                    <th colspan="3" class="fixedwith">@RequestScoped</th>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th colspan="3" class="fixedwith">@ViewScoped<sup><a href="#f2">2</a></sup></th>
+                    <th colspan="3" class="fixedwith">@ConversationScoped</th>
+                    <th colspan="3" class="fixedwith">@FlowScoped<sup><a href="#f3">3</a></sup></th>
+                    <th colspan="3" class="fixedwith">@SessionScoped</th>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th colspan="3" class="fixedwith">@ApplicationScoped</th>
+                </tr>
+                <tr>
+                    <td><h:graphicImage library="images/icons" name="bullet_red.png"/> JSR-346 (JSR-299)</td>
+                    <td>Type: (no annotation)</td>
+                    <scopes:statusTitleRows repeat="7"/>
+                </tr>
+                <tr>
+                    <td style="font-style: italic;">JBoss Seam Weld</td>
+                    <td>Default: @Dependent</td>
+                    <scopes:beanStatusRows bean="#{cdiBeanDependent}"/>
+                    <scopes:beanStatusRows bean="#{cdiBeanRequest}"/>
+                    <scopes:beanStatusRows bean="#{cdiBeanView}"/>
+                    <scopes:beanStatusRows bean="#{cdiBeanConversation}"/>
+                    <scopes:beanStatusRows bean="#{not empty facesContext.application.flowHandler.currentFlow ? cdiBeanFlow : null}"/>
+                    <scopes:beanStatusRows bean="#{cdiBeanSession}"/>
+                    <scopes:beanStatusRows bean="#{cdiBeanApplication}"/>
+                </tr>
+                <tr style="border: none;">
+                    <td colspan="0" style="border: none; padding: 8px;"></td>
+                </tr>
+                
+                <tr style="background-color: lightgray" valign="top">
+                    <th class="leftTitle">EJB 3.2 Lite</th>
+                    <td style="background-color: white;" class="leftTitle">javax.ejb.*</td>
+                    <th colspan="3" class="fixedwith">@Stateful</th>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th colspan="3" class="fixedwith">@Stateless</th>
+                    <th colspan="3" class="fixedwith">@Singleton</th>
+                </tr>
+                <tr valign="top">
+                    <td><h:graphicImage library="images/icons" name="bullet_blue.png"/> JSR-345 (JSR-318)</td>
+                    <td>Type: (defines scope)</td>
+                    <scopes:statusTitleRows repeat="3"/>
+                </tr>
+                <tr>
+                    <td style="font-style: italic;">Oracle GlassFish</td>
+                    <td></td>
+                    <scopes:beanStatusRows bean="#{jndiHelperBean.getBeanWithBeanManager('ejbBeanStateful')}"/>
+                    <scopes:beanStatusRows bean="#{ejbBeanStateless}"/>
+                    <scopes:beanStatusRows bean="#{ejbBeanSingleton}"/>
+                </tr>
+                <tr style="border: none;">
+                    <td colspan="0" style="border: none; padding: 8px;"></td>
+                </tr>
+                
+                <tr style="background-color: lightgray" valign="top">
+                    <th class="leftTitle">DI for Java 1.0</th>
+                    <td style="background-color: white;" class="leftTitle">javax.inject.*</td>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th style="background-color: white;" colspan="3" rowspan="3"/>
+                    <th colspan="3" class="fixedwith">@Singleton</th>
+                </tr>
+                <tr>
+                    <td><h:graphicImage library="images/icons" name="bullet_orange.png"/> JSR-330</td>
+                    <td>Type: @Named</td>
+                    <scopes:statusTitleRows repeat="1"/>
+                </tr>
+                <tr>
+                    <td style="font-style: italic;">Google Guice</td>
+                    <td>Default: CDI @Dependent</td>
+                    <scopes:beanStatusRows bean="#{guiceBeanSingleton}"/>
+                </tr>
+                <tr style="border: none;">
+                    <td colspan="0" style="border: none; padding: 8px;"></td>
+                </tr>
+            </table>
+            
+            <h3>Notes</h3>
+            <ol>
+                <li id="f1">Flash isn't actually a bean scope, but rather a Map-backed facility to carry information over from one HTTP request
+                    to the next. It is available either by injecting a <code>Flash</code> instance or by using the implicit EL object
+                    <code>flash</code>.</li>
+                <li id="f2">CDI's view scope's fully qualified name is @javax.faces.view.ViewScoped. It is actually provided by JSF which
+                uses CDI's @NormalScope extension point in order to port JSF's original view scope to CDI beans.</li>
+                <li id="f3">CDI's flow scope's fully qualified name is @javax.faces.flow.FlowScoped. It is actually provided by JSF which
+                uses CDI's @NormalScope extension point to provide this scope for CDI beans.</li>
+            </ol>
+            <hr/>
+            <p>developed by <a href="http://www.codebulb.ch">codebulb.ch</a>. 
+                    (<a href="http://www.codebulb.ch/2015/05/java-ee-7-bean-scopes-compared-part-1.html">Original blog post</a>.) 
+                    Uses <a href="http://www.famfamfam.com/lab/icons/silk/">Silk Icon</a> icon set. Built May 24, 2015.</p>
+        </ui:composition>
+    </h:body>
+</html>
+

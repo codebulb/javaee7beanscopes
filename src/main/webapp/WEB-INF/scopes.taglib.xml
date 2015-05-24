@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<facelet-taglib version="2.0"
+                xmlns="http://java.sun.com/xml/ns/javaee"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd">
+    <namespace>http://www.codebulb.ch/javaee7scopes/facelets</namespace>
+    <tag>
+	<tag-name>table</tag-name>
+	<source>tags/table.xhtml</source>
+        <attribute>
+            <name>index</name>
+        </attribute>
+    </tag>
+    <tag>
+	<tag-name>statusTitleRows</tag-name>
+	<source>tags/statusTitleRows.xhtml</source>
+        <attribute>
+            <name>repeat</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+    <tag>
+	<tag-name>beanStatusRows</tag-name>
+	<source>tags/beanStatusRows.xhtml</source>
+        <attribute>
+            <name>bean</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+</facelet-taglib>
