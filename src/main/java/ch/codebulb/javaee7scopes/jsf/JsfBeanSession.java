@@ -1,6 +1,7 @@
 package ch.codebulb.javaee7scopes.jsf;
 
 import ch.codebulb.javaee7scopes.BaseBean;
+import java.io.Serializable;
 import javax.enterprise.inject.Alternative;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -9,6 +10,6 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 // we must use JSR 299 annotation Alternative, otherwise it's considered a CDI bean.
 @Alternative
-public class JsfBeanSession extends BaseBean {
+public class JsfBeanSession extends BaseBean implements Serializable {
     
 }
